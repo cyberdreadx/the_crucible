@@ -18,6 +18,26 @@ export class MiniGameViewer extends LitElement {
     :host {
       display: block;
       padding: 1rem;
+      position: relative;
+    }
+
+    /* Cyberpunk scanline overlay */
+    :host::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.03) 0px,
+        rgba(0, 0, 0, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1000;
     }
 
     .header {
@@ -25,83 +45,130 @@ export class MiniGameViewer extends LitElement {
       justify-content: space-between;
       align-items: center;
       margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     h2 {
       font-family: 'Orbitron', monospace;
-      color: #ffd700;
+      color: #00f0ff;
       margin: 0;
+      text-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
+      letter-spacing: 2px;
     }
 
     .controls {
       display: flex;
       gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
     button {
       font-family: 'Rajdhani', sans-serif;
-      padding: 0.5rem 1rem;
-      background: linear-gradient(135deg, rgba(255, 0, 100, 0.2), rgba(255, 107, 0, 0.2));
-      border: 1px solid #ff0064;
-      color: #fff;
+      padding: 0.6rem 1.2rem;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.15), rgba(255, 0, 100, 0.15));
+      border: 1px solid #00f0ff;
+      color: #00f0ff;
       cursor: pointer;
       transition: all 0.3s;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 1px;
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
     }
 
     button:hover {
-      background: rgba(255, 0, 100, 0.4);
-      box-shadow: 0 0 15px rgba(255, 0, 100, 0.3);
+      background: rgba(0, 240, 255, 0.3);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+      text-shadow: 0 0 10px #00f0ff;
     }
 
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
       gap: 1.5rem;
     }
 
     .game-card {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(30, 20, 40, 0.8));
-      border: 2px solid rgba(255, 200, 0, 0.3);
-      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0, 10, 20, 0.95), rgba(20, 0, 30, 0.95));
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 4px;
       overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00f0ff, #ff0064, transparent);
+      animation: scan 2s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .game-card:hover {
+      border-color: #00f0ff;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.2), 0 0 60px rgba(255, 0, 100, 0.1);
+      transform: translateY(-2px);
     }
 
     .game-header {
-      background: linear-gradient(90deg, rgba(255, 0, 100, 0.2), rgba(255, 200, 0, 0.2));
+      background: linear-gradient(90deg, rgba(0, 240, 255, 0.1), rgba(255, 0, 100, 0.1));
       padding: 0.75rem 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
     }
 
     .game-type {
       font-family: 'Orbitron', monospace;
-      font-size: 0.9rem;
-      color: #ffd700;
+      font-size: 0.85rem;
+      color: #00f0ff;
       text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 5px #00f0ff;
     }
 
     .game-status {
-      font-size: 0.8rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 2px;
+      font-family: 'Orbitron', monospace;
     }
 
     .game-status.active {
       background: rgba(0, 255, 136, 0.2);
       color: #00ff88;
+      border: 1px solid #00ff88;
+      animation: pulse-status 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-status {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
     }
 
     .game-status.finished {
       background: rgba(255, 0, 100, 0.2);
       color: #ff0064;
+      border: 1px solid #ff0064;
     }
 
     .players {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 0.75rem 1rem;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.4);
     }
 
     .player {
@@ -116,51 +183,90 @@ export class MiniGameViewer extends LitElement {
 
     .player-name {
       font-weight: 600;
+      font-family: 'Rajdhani', sans-serif;
+      color: #fff;
     }
 
     .vs {
       color: #ff0064;
       font-family: 'Orbitron', monospace;
+      text-shadow: 0 0 10px #ff0064;
     }
 
     .game-board {
       padding: 1rem;
-      min-height: 150px;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* Tic-Tac-Toe Board */
+    /* Tic-Tac-Toe Board - Cyberpunk */
     .ttt-board {
       display: grid;
-      grid-template-columns: repeat(3, 50px);
+      grid-template-columns: repeat(3, 60px);
       gap: 4px;
       justify-content: center;
     }
 
     .ttt-cell {
-      width: 50px;
-      height: 50px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 200, 0, 0.3);
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 20, 40, 0.8);
+      border: 1px solid rgba(0, 240, 255, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 2rem;
       font-weight: bold;
     }
 
-    .ttt-cell.x { color: #00ff88; }
-    .ttt-cell.o { color: #ff0064; }
+    .ttt-cell.x { 
+      color: #00f0ff; 
+      text-shadow: 0 0 15px #00f0ff;
+    }
+    .ttt-cell.o { 
+      color: #ff0064; 
+      text-shadow: 0 0 15px #ff0064;
+    }
 
-    /* Chess/Checkers Board */
-    .chess-board {
-      font-family: monospace;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      white-space: pre;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 0.5rem;
-      border-radius: 4px;
-      overflow-x: auto;
+    /* Chess/Checkers Board - Real 8x8 grid */
+    .chess-board-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .chess-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 28px);
+      grid-template-rows: repeat(8, 28px);
+      border: 2px solid #00f0ff;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+    }
+
+    .chess-cell {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .chess-cell.light {
+      background: linear-gradient(135deg, #2a3a4a, #1a2a3a);
+    }
+
+    .chess-cell.dark {
+      background: linear-gradient(135deg, #0a1520, #051015);
+    }
+
+    .chess-move-count {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #00f0ff;
+      font-family: 'Orbitron', monospace;
     }
 
     /* Math/Trivia Puzzle */
@@ -170,15 +276,17 @@ export class MiniGameViewer extends LitElement {
     }
 
     .puzzle-question {
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       font-weight: bold;
-      color: #ffd700;
+      color: #ff0064;
       margin-bottom: 0.5rem;
+      font-family: 'Orbitron', monospace;
+      text-shadow: 0 0 10px rgba(255, 0, 100, 0.5);
     }
 
     .puzzle-instruction {
       font-size: 0.85rem;
-      opacity: 0.7;
+      color: rgba(255, 255, 255, 0.6);
     }
 
     /* RPS Display */
@@ -187,8 +295,10 @@ export class MiniGameViewer extends LitElement {
     }
 
     .rps-round {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       margin-bottom: 0.5rem;
+      color: #00f0ff;
+      font-family: 'Orbitron', monospace;
     }
 
     .rps-scores {
@@ -200,40 +310,40 @@ export class MiniGameViewer extends LitElement {
 
     .rps-score {
       padding: 0.5rem 1rem;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
       border-radius: 4px;
+      font-family: 'Orbitron', monospace;
     }
 
     /* Move log */
     .move-log {
       padding: 0.5rem 1rem;
-      background: rgba(0, 0, 0, 0.4);
-      max-height: 80px;
-      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.5);
+      border-top: 1px solid rgba(0, 240, 255, 0.2);
       font-size: 0.8rem;
-    }
-
-    .move-item {
-      padding: 0.2rem 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.6);
+      font-family: monospace;
     }
 
     /* Result */
     .game-result {
       padding: 0.75rem 1rem;
-      background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), transparent);
+      background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent);
       border-top: 1px solid rgba(255, 215, 0, 0.3);
       font-weight: 600;
     }
 
     .winner-name {
       color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      font-family: 'Orbitron', monospace;
     }
 
     .no-games {
       text-align: center;
       padding: 3rem;
-      opacity: 0.6;
+      color: rgba(255, 255, 255, 0.5);
     }
   `;
 
@@ -340,10 +450,42 @@ export class MiniGameViewer extends LitElement {
   }
 
   private renderBoard(state: any) {
+    // Parse the text-based board into a visual grid
+    const boardStr = state.board || '';
+    const lines = boardStr.split('\n').filter((line: string) => line.trim() && !line.includes('---'));
+
+    // Create 8x8 grid cells
+    const cells = [];
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const isLight = (row + col) % 2 === 0;
+        const lineIndex = row < lines.length ? row : 0;
+        const line = lines[lineIndex] || '';
+        // Parse piece from line (assumes format like "| r | n | b |...")
+        const pieces = line.split('|').filter((p: string) => p.trim()).map((p: string) => p.trim());
+        const piece = pieces[col] || '';
+
+        // Map piece letters to Unicode chess symbols
+        const pieceMap: { [key: string]: string } = {
+          'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+          'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟',
+          'w': '⚪', 'W': '🔵', '.': ''
+        };
+
+        cells.push(html`
+          <div class="chess-cell ${isLight ? 'light' : 'dark'}">
+            ${pieceMap[piece] || piece}
+          </div>
+        `);
+      }
+    }
+
     return html`
-      <div class="chess-board">${state.board || 'Loading...'}</div>
-      <div style="text-align: center; margin-top: 0.5rem; font-size: 0.85rem; opacity: 0.7;">
-        Move ${state.move_count || 0}
+      <div class="chess-board-container">
+        <div class="chess-grid">
+          ${cells}
+        </div>
+        <div class="chess-move-count">Move ${state.move_count || 0}</div>
       </div>
     `;
   }
