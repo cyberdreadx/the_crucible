@@ -450,31 +450,33 @@ export class MiniGameViewer extends LitElement {
   }
 
   private renderBoard(state: any) {
-    // Parse the text-based board into a visual grid
+    // Backend format: "  a b c d e f g h\n8 r n b q k b n r\n7 p p p p ..."
+    // Each row starts with row number, then space-separated pieces
     const boardStr = state.board || '';
-    const lines = boardStr.split('\n').filter((line: string) => line.trim() && !line.includes('---'));
+    const lines = boardStr.split('\n').filter((line: string) => /^\d/.test(line.trim()));
+
+    // Map piece letters to Unicode chess symbols
+    const pieceMap: { [key: string]: string } = {
+      'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+      'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟',
+      '·': '', '.': '', 'w': '⚪', 'W': '🔵', 'x': '🔴', 'X': '🟠'
+    };
 
     // Create 8x8 grid cells
     const cells = [];
     for (let row = 0; row < 8; row++) {
+      const line = lines[row] || '';
+      // Split by space, skip first element (row number)
+      const parts = line.trim().split(/\s+/);
+      const pieces = parts.slice(1); // Remove row number
+
       for (let col = 0; col < 8; col++) {
         const isLight = (row + col) % 2 === 0;
-        const lineIndex = row < lines.length ? row : 0;
-        const line = lines[lineIndex] || '';
-        // Parse piece from line (assumes format like "| r | n | b |...")
-        const pieces = line.split('|').filter((p: string) => p.trim()).map((p: string) => p.trim());
         const piece = pieces[col] || '';
-
-        // Map piece letters to Unicode chess symbols
-        const pieceMap: { [key: string]: string } = {
-          'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
-          'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟',
-          'w': '⚪', 'W': '🔵', '.': ''
-        };
 
         cells.push(html`
           <div class="chess-cell ${isLight ? 'light' : 'dark'}">
-            ${pieceMap[piece] || piece}
+            ${pieceMap[piece] !== undefined ? pieceMap[piece] : piece}
           </div>
         `);
       }
