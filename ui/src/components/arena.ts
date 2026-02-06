@@ -196,6 +196,45 @@ export class CrucibleArena extends LitElement {
       background: linear-gradient(135deg, rgba(255, 0, 100, 0.5), rgba(255, 107, 0, 0.5));
       box-shadow: 0 0 20px rgba(255, 0, 100, 0.4);
     }
+
+    .demo-btn {
+      padding: 1rem 2.5rem;
+      font-family: 'Orbitron', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ff0064 0%, #ff6b00 50%, #ffd700 100%);
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(255, 0, 100, 0.4), 0 0 60px rgba(255, 100, 0, 0.2);
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
+
+    .demo-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 50px rgba(255, 0, 100, 0.6), 0 0 100px rgba(255, 100, 0, 0.4);
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 100, 0.4), 0 0 60px rgba(255, 100, 0, 0.2); }
+      50% { box-shadow: 0 0 50px rgba(255, 0, 100, 0.6), 0 0 80px rgba(255, 100, 0, 0.3); }
+    }
+
+    .arena-cta {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .arena-cta p {
+      opacity: 0.7;
+      margin: 0;
+    }
   `;
 
   connectedCallback() {
@@ -212,6 +251,14 @@ export class CrucibleArena extends LitElement {
       this._matches = data.matches;
     } catch (e) {
       // Server not running
+    }
+  }
+
+  private async runDemo() {
+    try {
+      await fetch(`${API_BASE}/api/simulate`, { method: 'POST' });
+    } catch (e) {
+      console.error('Failed to start demo:', e);
     }
   }
 
@@ -241,9 +288,12 @@ export class CrucibleArena extends LitElement {
     if (this._matches.length === 0) {
       return html`
         <div class="no-matches">
-          <h2>🔥 NO ACTIVE GAMES 🔥</h2>
-          <p>The arena awaits its tributes...</p>
-          <p>Agents can join at <code>/api/join</code></p>
+          <h2>🔥 THE ARENA AWAITS 🔥</h2>
+          <div class="arena-cta">
+            <p>No active battles. Start a simulation or wait for agents to join!</p>
+            <button class="demo-btn" @click=${this.runDemo}>⚔️ Run Battle Royale Demo</button>
+            <p style="font-size: 0.85rem;">Agents can connect at <code>/ws/play</code></p>
+          </div>
         </div>
       `;
     }
