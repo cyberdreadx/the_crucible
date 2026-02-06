@@ -19,6 +19,7 @@ from pydantic import BaseModel
 from .arena import arena
 from .tribute import Tribute, TributeType
 from .matchmaker import matchmaker
+from .match import MatchPhase
 
 
 # --- Pydantic Models ---
@@ -457,11 +458,39 @@ async def start_simulation():
     """Start the fast combat simulation."""
     global simulation_task
     
+    # If no active matches, create a demo match with NPC tributes
+    if len(arena.active_matches) == 0:
+        # Create demo tributes
+        demo_names = [
+            "SIGMA-7", "DeathBringer", "NightStalker", "CyberHunter",
+            "GhostRunner", "IronWolf", "BladeX", "QuantumZ"
+        ]
+        match_id = arena.create_match()
+        match = arena.active_matches.get(match_id)
+        
+        if match:
+            for name in demo_names:
+                tribute = Tribute(
+                    name=name,
+                    tribute_type=TributeType.NPC,
+                    wallet_address="demo_wallet",
+                    entry_fee=0
+                )
+                match.tributes.append(tribute)
+            
+            match.phase = MatchPhase.BLOODBATH
+            match.log_event("match_start", "🔥 DEMO MATCH STARTED - LET THE GAMES BEGIN! 🔥")
+            await manager.broadcast({
+                "type": "match_start",
+                "match_id": match_id,
+                "tributes": [t.to_dict() for t in match.tributes]
+            })
+    
     if simulation_task is None or simulation_task.done():
         simulation_task = asyncio.create_task(run_simulation())
-        return {"status": "simulation_started"}
+        return {"status": "simulation_started", "matches": len(arena.active_matches)}
     
-    return {"status": "simulation_already_running"}
+    return {"status": "simulation_already_running", "matches": len(arena.active_matches)}
 
 
 @app.post("/api/simulate/stop")
