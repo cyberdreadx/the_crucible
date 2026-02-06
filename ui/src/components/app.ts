@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { API_BASE, WS_BASE } from '../config.ts';
 import './arena.ts';
 import './leaderboard.ts';
 import './match-viewer.ts';
@@ -155,13 +156,13 @@ export class CrucibleApp extends LitElement {
 
   private async fetchStatus() {
     try {
-      const res = await fetch('http://localhost:8080/api/status');
+      const res = await fetch(`${API_BASE}/api/status`);
       const data = await res.json();
       this.status = data.queue;
       this.spectators = data.spectators;
 
       // Also fetch games
-      const gamesRes = await fetch('http://localhost:8080/api/games');
+      const gamesRes = await fetch(`${API_BASE}/api/games`);
       const gamesData = await gamesRes.json();
       this.games = gamesData.games || [];
     } catch (e) {
@@ -171,7 +172,7 @@ export class CrucibleApp extends LitElement {
 
   private connectWebSocket() {
     try {
-      this.ws = new WebSocket('ws://localhost:8080/ws/spectate');
+      this.ws = new WebSocket(`${WS_BASE}/ws/spectate`);
 
       this.ws.onmessage = (event) => {
         const data = JSON.parse(event.data);

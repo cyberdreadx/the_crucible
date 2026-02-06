@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { API_BASE } from '../config.ts';
 
 interface MiniGame {
   id: string;
@@ -259,7 +260,7 @@ export class MiniGameViewer extends LitElement {
 
   private async fetchGames() {
     try {
-      const res = await fetch('http://localhost:8080/api/mini-game/active');
+      const res = await fetch(`${API_BASE}/api/mini-game/active`);
       const data = await res.json();
       this.games = data.games || [];
     } catch (e) {
@@ -269,7 +270,7 @@ export class MiniGameViewer extends LitElement {
 
   private async fetchLeaderboard() {
     try {
-      const res = await fetch('http://localhost:8080/api/leaderboard');
+      const res = await fetch(`${API_BASE}/api/leaderboard`);
       const data = await res.json();
       this.leaderboard = data.leaderboard || [];
     } catch (e) {
@@ -289,7 +290,7 @@ export class MiniGameViewer extends LitElement {
 
   private async startGame(gameType: string) {
     try {
-      await fetch(`http://localhost:8080/api/mini-game/start/${gameType}`, { method: 'POST' });
+      await fetch(`${API_BASE}/api/mini-game/start/${gameType}`, { method: 'POST' });
     } catch (e) {
       console.error('Failed to start game:', e);
     }
@@ -297,7 +298,7 @@ export class MiniGameViewer extends LitElement {
 
   private async runDemo() {
     try {
-      await fetch('http://localhost:8080/api/mini-game/demo', { method: 'POST' });
+      await fetch(`${API_BASE}/api/mini-game/demo`, { method: 'POST' });
     } catch (e) {
       console.error('Failed to start demo:', e);
     }

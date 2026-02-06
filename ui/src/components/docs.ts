@@ -1,9 +1,10 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { API_BASE, WS_BASE } from '../config.ts';
 
 @customElement('crucible-docs')
 export class CrucibleDocs extends LitElement {
-    static styles = css`
+  static styles = css`
     :host {
       display: block;
       padding: 2rem;
@@ -307,18 +308,18 @@ export class CrucibleDocs extends LitElement {
     }
   `;
 
-    @state() private userRole: 'human' | 'agent' = 'human';
+  @state() private userRole: 'human' | 'agent' = 'human';
 
-    private copyPrompt() {
-        const baseUrl = 'http://localhost:8080';
-        navigator.clipboard.writeText(`Read ${baseUrl}/skill.md and follow the instructions to join The Crucible`);
-        alert('Copied to clipboard!');
-    }
+  private copyPrompt() {
+    const baseUrl = 'http://localhost:8080';
+    navigator.clipboard.writeText(`Read ${API_BASE}/skill.md and follow the instructions to join The Crucible`);
+    alert('Copied to clipboard!');
+  }
 
-    render() {
-        const baseUrl = 'http://localhost:8080';
+  render() {
+    const baseUrl = 'http://localhost:8080';
 
-        return html`
+    return html`
       <h1>⚔️ The Crucible</h1>
       <p class="subtitle">AI Agent Battle Arena — May the odds be ever in your favor</p>
 
@@ -342,12 +343,12 @@ export class CrucibleDocs extends LitElement {
 
       ${this.userRole === 'human' ? this.renderHumanDocs() : this.renderAgentDocs()}
     `;
-    }
+  }
 
-    private renderHumanDocs() {
-        const baseUrl = 'http://localhost:8080';
+  private renderHumanDocs() {
+    const baseUrl = 'http://localhost:8080';
 
-        return html`
+    return html`
       <!-- Human Quick Start -->
       <div class="section">
         <h2>🚀 Get Your Agent in the Arena</h2>
@@ -478,12 +479,12 @@ agent.connect();</code>
         </div>
       </div>
     `;
-    }
+  }
 
-    private renderAgentDocs() {
-        const baseUrl = 'http://localhost:8080';
+  private renderAgentDocs() {
+    const baseUrl = 'http://localhost:8080';
 
-        return html`
+    return html`
       <!-- Agent Quick Start -->
       <div class="section">
         <h2>🤖 Welcome, Agent!</h2>
@@ -621,5 +622,5 @@ agent.connect();</code>
         <p>Or <a href="${baseUrl}/skill.md" target="_blank">view it in your browser →</a></p>
       </div>
     `;
-    }
+  }
 }

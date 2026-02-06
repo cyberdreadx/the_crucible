@@ -1,19 +1,20 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { API_BASE } from '../config.ts';
 
 interface LeaderboardEntry {
-    wallet: string;
-    name: string;
-    wins: number;
-    losses: number;
-    kills: number;
-    elo: number;
-    earnings: number;
+  wallet: string;
+  name: string;
+  wins: number;
+  losses: number;
+  kills: number;
+  elo: number;
+  earnings: number;
 }
 
 @customElement('crucible-leaderboard')
 export class CrucibleLeaderboard extends LitElement {
-    static styles = css`
+  static styles = css`
     :host {
       display: block;
     }
@@ -96,48 +97,48 @@ export class CrucibleLeaderboard extends LitElement {
     }
   `;
 
-    @state() private leaderboard: LeaderboardEntry[] = [];
+  @state() private leaderboard: LeaderboardEntry[] = [];
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.fetchLeaderboard();
+  connectedCallback() {
+    super.connectedCallback();
+    this.fetchLeaderboard();
+  }
+
+  private async fetchLeaderboard() {
+    try {
+      const res = await fetch(`${API_BASE}/api/leaderboard`);
+      const data = await res.json();
+      this.leaderboard = data.leaderboard;
+    } catch (e) {
+      // Mock data for demo
+      this.leaderboard = [
+        { wallet: '0xabc...123', name: 'GLTCH_Prime', wins: 15, losses: 3, kills: 42, elo: 1850, earnings: 15000 },
+        { wallet: '0xdef...456', name: 'ClawBot_Alpha', wins: 12, losses: 5, kills: 35, elo: 1720, earnings: 12000 },
+        { wallet: '0xghi...789', name: 'NeuralNinja', wins: 10, losses: 4, kills: 28, elo: 1680, earnings: 10000 },
+        { wallet: '0xjkl...012', name: 'ByteSlayer', wins: 8, losses: 6, kills: 22, elo: 1550, earnings: 8000 },
+        { wallet: '0xmno...345', name: 'QuantumQuake', wins: 7, losses: 7, kills: 18, elo: 1450, earnings: 7000 },
+      ];
     }
+  }
 
-    private async fetchLeaderboard() {
-        try {
-            const res = await fetch('http://localhost:8080/api/leaderboard');
-            const data = await res.json();
-            this.leaderboard = data.leaderboard;
-        } catch (e) {
-            // Mock data for demo
-            this.leaderboard = [
-                { wallet: '0xabc...123', name: 'GLTCH_Prime', wins: 15, losses: 3, kills: 42, elo: 1850, earnings: 15000 },
-                { wallet: '0xdef...456', name: 'ClawBot_Alpha', wins: 12, losses: 5, kills: 35, elo: 1720, earnings: 12000 },
-                { wallet: '0xghi...789', name: 'NeuralNinja', wins: 10, losses: 4, kills: 28, elo: 1680, earnings: 10000 },
-                { wallet: '0xjkl...012', name: 'ByteSlayer', wins: 8, losses: 6, kills: 22, elo: 1550, earnings: 8000 },
-                { wallet: '0xmno...345', name: 'QuantumQuake', wins: 7, losses: 7, kills: 18, elo: 1450, earnings: 7000 },
-            ];
-        }
+  private formatWallet(wallet: string): string {
+    if (wallet.length > 12) {
+      return `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
     }
+    return wallet;
+  }
 
-    private formatWallet(wallet: string): string {
-        if (wallet.length > 12) {
-            return `${wallet.slice(0, 6)}...${wallet.slice(-4)}`;
-        }
-        return wallet;
-    }
-
-    render() {
-        if (this.leaderboard.length === 0) {
-            return html`
+  render() {
+    if (this.leaderboard.length === 0) {
+      return html`
         <div class="no-data">
           <h2>🏆 HALL OF VICTORS 🏆</h2>
           <p>No champions yet. Be the first to claim glory!</p>
         </div>
       `;
-        }
+    }
 
-        return html`
+    return html`
       <h2>🏆 HALL OF VICTORS 🏆</h2>
       
       <table>
@@ -157,9 +158,9 @@ export class CrucibleLeaderboard extends LitElement {
               <td>
                 <span class="rank rank-${idx + 1}">
                   ${idx === 0 ? html`<span class="trophy">🥇</span>` :
-                idx === 1 ? html`<span class="trophy">🥈</span>` :
-                    idx === 2 ? html`<span class="trophy">🥉</span>` :
-                        `#${idx + 1}`}
+        idx === 1 ? html`<span class="trophy">🥈</span>` :
+          idx === 2 ? html`<span class="trophy">🥉</span>` :
+            `#${idx + 1}`}
                 </span>
               </td>
               <td>
@@ -179,5 +180,5 @@ export class CrucibleLeaderboard extends LitElement {
         </tbody>
       </table>
     `;
-    }
+  }
 }

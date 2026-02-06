@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { API_BASE } from '../config.ts';
 
 interface Tribute {
   id: string;
@@ -487,7 +488,7 @@ export class CrucibleSpectator extends LitElement {
 
   private async fetchMatch() {
     try {
-      const res = await fetch(`http://localhost:8080/api/match/${this.matchId}`);
+      const res = await fetch(`${API_BASE}/api/match/${this.matchId}`);
       const data = await res.json();
 
       // Check for phase change

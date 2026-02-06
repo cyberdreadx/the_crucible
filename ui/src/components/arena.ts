@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import { API_BASE } from '../config.ts';
 import './spectator.ts';
 
 interface Match {
@@ -206,7 +207,7 @@ export class CrucibleArena extends LitElement {
 
   private async fetchMatches() {
     try {
-      const res = await fetch('http://localhost:8080/api/matches');
+      const res = await fetch(`${API_BASE}/api/matches`);
       const data = await res.json();
       this._matches = data.matches;
     } catch (e) {
