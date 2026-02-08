@@ -19,7 +19,7 @@ except ImportError:
 class CrucibleBot:
     """A simple bot that plays Crucible games."""
     
-    def __init__(self, name: str, server_url: str = "ws://localhost:8080/ws/play"):
+    def __init__(self, name: str, server_url: str = "wss://crucible.gltch.app/ws/play"):
         self.name = name
         self.server_url = server_url
         self.agent_id = None
